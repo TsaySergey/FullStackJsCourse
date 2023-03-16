@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant user
+    participant browser
+    participant server
+
+user->>browser: Submit a text
+
+    browser->>server: POST 201: https://studies.cs.helsinki.fi/exampleapp/spa (Request content: "Kek4" data:""2023-03-16T13:00:57.780Z"")
+    activate server
+    server-->>browser: {Response: "message":"note created"}
+    deactivate server
