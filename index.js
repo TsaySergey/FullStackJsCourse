@@ -1,6 +1,8 @@
 const express = require('express')
 var morgan = require('morgan')
 const cors = require('cors')
+require('dotenv').config()
+const Person = require('./models/person')
 var currentDate = new Date()
 
 morgan.token('req-body', (req) => {
@@ -44,16 +46,10 @@ app.get(`/info`, (req, res) => {
 })
 
 app.get(`/api/persons/:id`, (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
-    
-    if(person) {
-    res.json(person)
-
-    }
-    else {
-        res.status(404).end()
-    }
+    Person.findById(request.param.id)
+        .then(note => {
+            response.json(person)
+        })
 })
 
 app.delete(`/api/persons/:id`, (req, res) => {
@@ -67,12 +63,12 @@ app.post(`/api/persons`, (req, res) => {
     const body = req.body
     const uniqueName = persons.find(person => person.name == body.name)
     console.log(body)
-    if (!body.name) {
+    if (body.name === undefined) {
         return res.status(400).json({ 
           error: 'name is missing' 
         })
     }
-    else if(!body.number) {
+    else if(body.number === undefined) {
         return res.status(400).json({
             error: "number is missing"
         })
@@ -88,11 +84,12 @@ app.post(`/api/persons`, (req, res) => {
         name: body.name,
         number: body.number
     }
-    persons = persons.concat(person)
-    return res.json(person)
+    person.save().then(savedPerson => { 
+        response.json(savedPerson)
+    })
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log('Server is running')
+    console.log(`Server is running on port ${PORT}`)
 })
